@@ -1463,7 +1463,7 @@ public class GitLabApi implements AutoCloseable {
 
         return releaseLinksApi;
     }
-    
+
     /**
      * Gets the ReleasesApi instance owned by this GitLabApi instance. The ReleasesApi is used
      * to perform all release related API calls.

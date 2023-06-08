@@ -89,22 +89,24 @@ public final class AccessTokenUtils {
     protected static final String USER_AGENT = "GitLab4J Client";
     protected static final String COOKIES_HEADER = "Set-Cookie";
 
-    protected static final String NEW_USER_AUTHENTICITY_TOKEN_REGEX = "\"new_user\".*name=\\\"authenticity_token\\\"\\svalue=\\\"([^\\\"]*)\\\".*new_new_user";
+//    protected static final String NEW_USER_AUTHENTICITY_TOKEN_REGEX = "\"new_user\".*name=\\\"authenticity_token\\\"\\svalue=\\\"([^\\\"]*)\\\".*new_user";
+    protected static final String NEW_USER_AUTHENTICITY_TOKEN_REGEX = "\"new_user\".*name=\"authenticity_token\"\\svalue=\"([^\"]*)\"";
     protected static final Pattern NEW_USER_AUTHENTICITY_TOKEN_PATTERN = Pattern.compile(NEW_USER_AUTHENTICITY_TOKEN_REGEX);
 
-    protected static final String AUTHENTICITY_TOKEN_REGEX = "name=\\\"authenticity_token\\\"\\svalue=\\\"([^\\\"]*)\\\"";
+//    protected static final String AUTHENTICITY_TOKEN_REGEX = "name=\\\"authenticity_token\\\"\\svalue=\\\"([^\\\"]*)\\\"";
+    protected static final String AUTHENTICITY_TOKEN_REGEX = "name=\"authenticity_token\"\\svalue=\"([^\"]*)\"";
     protected static final Pattern AUTHENTICITY_TOKEN_PATTERN = Pattern.compile(AUTHENTICITY_TOKEN_REGEX);
 
-    protected static final String PERSONAL_ACCESS_TOKEN_REGEX = "name=\\\"created-personal-access-token\\\".*data-clipboard-text=\\\"([^\\\"]*)\\\".*\\/>";
+    protected static final String PERSONAL_ACCESS_TOKEN_REGEX = "name=\"created-personal-access-token\".*data-clipboard-text=\"([^\"]*)\".*/>";
     protected static final Pattern PERSONAL_ACCESS_TOKEN_PATTERN = Pattern.compile(PERSONAL_ACCESS_TOKEN_REGEX);
 
-    protected static final String REVOKE_PERSONAL_ACCESS_TOKEN_REGEX = "href=\\\"([^\\\"]*)\\\"";
+    protected static final String REVOKE_PERSONAL_ACCESS_TOKEN_REGEX = "href=\"([^\"]*)\"";
     protected static final Pattern REVOKE_PERSONAL_ACCESS_TOKEN_PATTERN = Pattern.compile(REVOKE_PERSONAL_ACCESS_TOKEN_REGEX);
 
-    protected static final String FEED_TOKEN_REGEX = "name=\\\"feed_token\\\".*value=\\\"([^\\\"]*)\\\".*\\/>";
+    protected static final String FEED_TOKEN_REGEX = "name=\"feed_token\".*value=\"([^\"]*)\".*/>";
     protected static final Pattern FEED_TOKEN_PATTERN = Pattern.compile(FEED_TOKEN_REGEX);
 
-    protected static final String HEALTH_CHECK_ACCESS_TOKEN_REGEX = "id=\"health-check-token\">([^<]*)<\\/code>";
+    protected static final String HEALTH_CHECK_ACCESS_TOKEN_REGEX = "id=\"health-check-token\">([^<]*)</code>";
     protected static final Pattern HEALTH_CHECK_ACCESS_TOKEN_PATTERN = Pattern.compile(HEALTH_CHECK_ACCESS_TOKEN_REGEX);
 
     /**
@@ -159,10 +161,10 @@ public final class AccessTokenUtils {
             cookies = login(baseUrl, username, password);
 
             /*******************************************************************************
-             * Step 2: Go to the /profile/personal_access_tokens page to fetch a           *
+             * Step 2: Go to the /-/profile/personal_access_tokens page to fetch a           *
              * new authenticity token.                                                     *
              *******************************************************************************/
-            String urlString = baseUrl + "/profile/personal_access_tokens";
+            String urlString = baseUrl + "/-/profile/personal_access_tokens";
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -177,6 +179,7 @@ public final class AccessTokenUtils {
             }
 
             String content = getContent(connection);
+            System.out.println("content: " + content);
             Matcher matcher = AUTHENTICITY_TOKEN_PATTERN.matcher(content);
             if (!matcher.find()) {
                 throw new GitLabApiException("authenticity_token not found, aborting!");
@@ -185,7 +188,7 @@ public final class AccessTokenUtils {
             String csrfToken = matcher.group(1);
 
             /*******************************************************************************
-             * Step 3: Submit the /profile/personalccess_tokens page with the info to      *
+             * Step 3: Submit the /-/profile/personal_access_tokens page with the info to      *
              * create a new personal access token.                                         *
              *******************************************************************************/
             connection = (HttpURLConnection) url.openConnection();
@@ -311,10 +314,10 @@ public final class AccessTokenUtils {
             cookies = login(baseUrl, username, password);
 
             /*******************************************************************************
-             * Step 2: Go to the /profile/personal_access_tokens page and fetch the        *
+             * Step 2: Go to the /-/profile/personal_access_tokens page and fetch the        *
              *         authenticity token.                                                 *
              *******************************************************************************/
-            String urlString = baseUrl + "/profile/personal_access_tokens";
+            String urlString = baseUrl + "/-/profile/personal_access_tokens";
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -337,7 +340,7 @@ public final class AccessTokenUtils {
             String csrfToken = matcher.group(1);
 
             /*******************************************************************************
-             * Step 3: Submit the /profile/personal_access_tokens page with the info to    *
+             * Step 3: Submit the /-/profile/personal_access_tokens page with the info to    *
              * revoke the first matching personal access token.                            *
              *******************************************************************************/
             int indexOfTokenName = content.indexOf("<td>" + tokenName + "</td>");
@@ -454,10 +457,10 @@ public final class AccessTokenUtils {
             cookies = login(baseUrl, username, password);
 
             /*******************************************************************************
-             * Step 2: Go to the /profile/personal_access_tokens page and fetch the        *
+             * Step 2: Go to the /-/profile/personal_access_tokens page and fetch the        *
              *         Feed token.                                                         *
              *******************************************************************************/
-            String urlString = baseUrl + "/profile/personal_access_tokens";
+            String urlString = baseUrl + "/-/profile/personal_access_tokens";
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", USER_AGENT);

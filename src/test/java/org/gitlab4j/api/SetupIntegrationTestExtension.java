@@ -163,7 +163,7 @@ public class SetupIntegrationTestExtension implements BeforeAllCallback, Extensi
         String password = HelperUtils.getProperty(ADMIN_PASSWORD_KEY);
         if (password == null || password.trim().isEmpty()) {
             password = System.getProperty(ADMIN_PASSWORD_KEY);
-            password = (password == null || password.trim().isEmpty() ? "password" : password);
+            password = (password == null || password.trim().isEmpty() ? "p@ssw0rd" : password);
         }
 
         GitLabApi gitLabApi = GitLabApi.oauth2Login(TEST_HOST_URL, username, password, null, null, true);
